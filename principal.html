@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Principal</title>
+    <style>
+        :root { --bg-main: #0f172a; --bg-card: #1e293b; --accent: #3b82f6; --danger: #ef4444; --text: #f8fafc; }
+        body { background: var(--bg-main); color: var(--text); font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: var(--bg-card); padding: 2.5rem; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; }
+        .btn { width: 100%; padding: 0.75rem; border-radius: 6px; background: var(--accent); color: white; font-weight: bold; text-decoration: none; display: inline-block; box-sizing: border-box; margin-top: 0.5rem; }
+        .btn-danger { background: var(--danger); cursor: pointer; border: none;}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Bienvenido, <span id="nombreUser"></span></h2>
+        <p style="color: #94a3b8;">Sistema de Gestión Interna</p>
+        
+        <div style="margin-top: 2rem;">
+            <a href="buscador.html" class="btn">🔍 Ir al Buscador</a>
+            <button id="btnLogout" class="btn btn-danger">🚪 Salir del Sistema</button>
+        </div>
+    </div>
+
+    <script>
+        // Verificar si el usuario ingresó por el login
+        const nombre = localStorage.getItem('usuarioLogueado');
+        if (!nombre) {
+            window.location.href = 'index.html'; // Lo regresamos si no está logueado
+        } else {
+            document.getElementById('nombreUser').textContent = nombre;
+        }
+
+        // Funcionalidad de salir
+        document.getElementById('btnLogout').addEventListener('click', () => {
+            localStorage.removeItem('usuarioLogueado');
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

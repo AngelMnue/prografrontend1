@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscador</title>
+    <style>
+        :root { --bg-main: #0f172a; --bg-card: #1e293b; --accent: #3b82f6; --text: #f8fafc; }
+        body { background: var(--bg-main); color: var(--text); font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: var(--bg-card); padding: 2.5rem; border-radius: 12px; width: 100%; max-width: 500px; }
+        input { flex: 1; padding: 0.75rem; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; }
+        button { padding: 0.75rem 1.5rem; border: none; border-radius: 6px; background: var(--accent); color: white; font-weight: bold; cursor: pointer; }
+        .btn { width: 100%; padding: 0.75rem; border-radius: 6px; color: white; font-weight: bold; text-decoration: none; display: inline-block; box-sizing: border-box; text-align: center; margin-top: 0.5rem; }
+        .result-box { margin-top: 1.5rem; padding: 1rem; background: #0f172a; border-radius: 8px; display: none; border-left: 4px solid #3b82f6;}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 style="text-align:center;">Buscador de Productos</h2>
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+            <input type="text" id="codigoProducto" placeholder="Ingrese código (Ej: P001)">
+            <button id="btnBuscar">Buscar</button>
+        </div>
+        
+        <div id="errorBusqueda" style="color: #f87171; text-align: center; display: none;"></div>
+
+        <div id="resultado" class="result-box">
+            <h3 id="resNombre" style="color:#3b82f6; margin-top:0;"></h3>
+            <p><b>Categoría:</b> <span id="resCategoria"></span></p>
+            <p><b>Descripción:</b> <span id="resDescripcion"></span></p>
+            <p><b>Precio:</b> S/ <span id="resPrecio"></span></p>
+            <p><b>Stock:</b> <span id="resStock"></span></p>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <a href="principal.html" class="btn" style="background: #475569;">⬅️ Regresar</a>
+        </div>
+    </div>
+
+    <script>
+        // Proteger la ruta
+        if (!localStorage.getItem('usuarioLogueado')) window.location.href = 'index.html';
+
+        // Configura aquí tu URL de Render
+        const BACKEND_URL = 'AQUI_TU_URL_DE_RENDER';
+
+        document.getElementById('btnBuscar').addEventListener('click', async () => {
+            const codigo = document.getElementById('codigoProducto').value.trim();
+            const resBox = document.getElementById('resultado');
+            const errorBox = document.getElementById('errorBusqueda');
+            
+            resBox.style.display = 'none'; errorBox.style.display = 'none';
+            if(!codigo) return;
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/buscar_producto`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ codigo: codigo })
+                });
+                const data = await response.json();
+
+                if (data.encontrado) {
+                    document.getElementById('resNombre').textContent = data.nombre;
+                    document.getElementById('resCategoria').textContent = data.categoria;
+                    document.getElementById('resDescripcion').textContent = data.descripcion;
+                    document.getElementById('resPrecio').textContent = data.precio;
+                    document.getElementById('resStock').textContent = data.stock;
+                    resBox.style.display = 'block';
+                } else {
+                    errorBox.textContent = data.msg;
+                    errorBox.style.display = 'block';
+                }
+            } catch (err) {
+                errorBox.textContent = "Error conectando al servidor.";
+                errorBox.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
