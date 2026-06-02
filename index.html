@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Acceso al Sistema</title>
+    <style>
+        /* Mismos estilos base de antes */
+        :root { --bg-main: #0f172a; --bg-card: #1e293b; --accent: #3b82f6; --text: #f8fafc; --text-muted: #94a3b8; }
+        body { background: var(--bg-main); color: var(--text); font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: var(--bg-card); padding: 2.5rem; border-radius: 12px; width: 100%; max-width: 400px; }
+        h2 { text-align: center; margin-top: 0; }
+        .form-group { margin-bottom: 1.25rem; }
+        label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); }
+        input { width: 100%; padding: 0.75rem; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; box-sizing: border-box; }
+        button { width: 100%; padding: 0.75rem; border: none; border-radius: 6px; background: var(--accent); color: white; font-weight: bold; cursor: pointer; }
+        .alert { background: rgba(239, 68, 68, 0.2); color: #f87171; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; text-align: center; display: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Iniciar Sesión</h2>
+        <div id="errorMsg" class="alert"></div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Usuario:</label>
+                <input type="text" id="username" required autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>Contraseña:</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit">Ingresar</button>
+        </form>
+    </div>
+
+    <script>
+        // Configura aquí tu URL de Render
+        const BACKEND_URL = 'https://examenprograii-4.onrender.com';
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evita que la página se recargue
+            
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const errorBox = document.getElementById('errorMsg');
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Guardamos el nombre en el navegador y pasamos al panel
+                    localStorage.setItem('usuarioLogueado', data.nombre);
+                    window.location.href = 'principal.html';
+                } else {
+                    errorBox.textContent = data.msg;
+                    errorBox.style.display = 'block';
+                }
+            } catch (err) {
+                errorBox.textContent = "Error al conectar con el servidor.";
+                errorBox.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
